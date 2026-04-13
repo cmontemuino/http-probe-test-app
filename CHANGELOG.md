@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/cmontemuino/http-probe-test-app/compare/v0.1.0...v0.1.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* **ci:** add specific PAT for release-please ([#5](https://github.com/cmontemuino/http-probe-test-app/issues/5)) ([0da65e6](https://github.com/cmontemuino/http-probe-test-app/commit/0da65e6de79437633d7c5e069ed31fd39618cba3))
+
 ## 0.1.0 (2026-04-13)
 
 
