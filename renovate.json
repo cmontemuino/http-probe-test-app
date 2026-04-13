@@ -1,0 +1,55 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "schedule": [
+    "before 10am on Tuesday"
+  ],
+  "timezone": "UTC",
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore(deps):",
+  "packageRules": [
+    {
+      "description": "Group Go minor/patch updates",
+      "matchDatasources": ["go"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "go dependencies (non-major)",
+      "automerge": true
+    },
+    {
+      "description": "Separate Go major updates (breaking changes)",
+      "matchDatasources": ["go"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "go dependencies (major)",
+      "automerge": false
+    },
+    {
+      "description": "Group all GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "pinDigests": true,
+      "automerge": true
+    },
+    {
+      "description": "Docker base image updates (golang)",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["golang"],
+      "groupName": "docker-golang",
+      "automerge": false,
+      "schedule": ["before 10am on the first day of the month"]
+    },
+    {
+      "description": "golangci-lint version updates",
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["golangci/golangci-lint-action"],
+      "groupName": "golangci-lint",
+      "automerge": false
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+    "automerge": true
+  }
+}

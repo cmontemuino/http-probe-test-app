@@ -1,6 +1,7 @@
 # http-probe-test-app
 
 [![CI](https://github.com/cmontemuino/http-probe-test-app/actions/workflows/ci.yml/badge.svg)](https://github.com/cmontemuino/http-probe-test-app/actions/workflows/ci.yml)
+[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
 
 A small HTTP service to **exercise Kubernetes liveness/readiness probes** and related monitoring:
 artificial latency, configurable failure modes, and Prometheus metrics.
