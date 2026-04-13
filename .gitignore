@@ -1,0 +1,19 @@
+# Build output
+/out/
+/.gocache/
+/http-probe-test-app
+
+# Local env
+.env
+
+# Test / coverage output
+coverage*.txt
+coverage*.xml
+*.out
+*.test
+gotest_junit.xml
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,13 @@
+out/
+.gocache/
+.git/
+.github/
+Makefile
+.golangci.yml
+*_test.go
+deploy/
+tests.txt
+gotest_junit.xml
+coverage.txt
+coverage.xml
+README.md
