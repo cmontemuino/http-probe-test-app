@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -192,10 +191,8 @@ func TestRootHandler(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	_ = os.Setenv("PORT", "9090")
-	_ = os.Setenv("PREFIX", "custom")
-	defer func() { _ = os.Unsetenv("PORT") }()
-	defer func() { _ = os.Setenv("PREFIX", "dummy") }()
+	t.Setenv("PORT", "9090")
+	t.Setenv("PREFIX", "custom")
 
 	cfg := loadConfig()
 	if cfg.Port != 9090 || cfg.Prefix != "custom" {

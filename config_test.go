@@ -19,8 +19,7 @@ func TestGetEnv(t *testing.T) {
 
 	t.Run("returns value when set", func(t *testing.T) {
 		expected := "real-value"
-		_ = os.Setenv(key, expected)
-		defer func() { _ = os.Unsetenv(key) }()
+		t.Setenv(key, expected)
 		val := getEnv(key, fallback)
 		if val != expected {
 			t.Errorf("got %v, want %v", val, expected)
@@ -42,8 +41,7 @@ func TestGetEnvInt(t *testing.T) {
 
 	t.Run("returns value when set", func(t *testing.T) {
 		expected := 123
-		_ = os.Setenv(key, "123")
-		defer func() { _ = os.Unsetenv(key) }()
+		t.Setenv(key, "123")
 		val := getEnvInt(key, fallback)
 		if val != expected {
 			t.Errorf("got %v, want %v", val, expected)
@@ -51,8 +49,7 @@ func TestGetEnvInt(t *testing.T) {
 	})
 
 	t.Run("returns fallback on invalid int", func(t *testing.T) {
-		_ = os.Setenv(key, "not-an-int")
-		defer func() { _ = os.Unsetenv(key) }()
+		t.Setenv(key, "not-an-int")
 		val := getEnvInt(key, fallback)
 		if val != fallback {
 			t.Errorf("got %v, want %v", val, fallback)
