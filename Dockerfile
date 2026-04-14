@@ -15,6 +15,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s -X 'main.Version=${VERSION
 # Runtime stage
 FROM scratch
 
+LABEL org.opencontainers.image.source="https://github.com/cmontemuino/http-probe-test-app"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
+
 COPY --from=builder /app/http-probe-test-app /http-probe-test-app
 
 EXPOSE 8080
