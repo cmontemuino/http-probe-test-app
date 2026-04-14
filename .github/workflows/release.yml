@@ -7,11 +7,13 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build-and-push:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v6
 
@@ -58,3 +60,44 @@ jobs:
             ghcr.io/cmontemuino/http-probe-test-app:${{ steps.tags.outputs.major_minor }}
             ghcr.io/cmontemuino/http-probe-test-app:${{ steps.tags.outputs.major }}
             ghcr.io/cmontemuino/http-probe-test-app:latest
+
+  trivy-release:
+    name: Scan Released Image
+    runs-on: ubuntu-24.04
+    needs: build-and-push
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Extract tag version
+        id: version
+        shell: bash
+        run: |
+          echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Scan published image with Trivy
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: ghcr.io/cmontemuino/http-probe-test-app:${{ steps.version.outputs.tag }}
+          format: 'sarif'
+          output: 'trivy-release-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-release-results.sarif'
+          category: 'trivy-release'
+
+      - name: Fail if critical vulnerabilities found
+        uses: aquasecurity/trivy-action@0.35.0
+        with:
+          image-ref: ghcr.io/cmontemuino/http-probe-test-app:${{ steps.version.outputs.tag }}
+          format: 'table'
+          severity: 'CRITICAL'
+          exit-code: '1'

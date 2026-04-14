@@ -48,3 +48,37 @@ Renovate creates immediate PRs for security vulnerabilities. These are:
 - Labeled with `security`
 - Auto-merged if CI passes
 - Prioritized over regular updates
+
+## Security
+
+### Running Security Scans Locally
+
+Before submitting a PR, run these security checks:
+
+```bash
+# Go vulnerability check
+make govulncheck
+
+# Container vulnerability scan (requires Docker + Trivy installed)
+make docker-build
+trivy image --severity CRITICAL,HIGH test:local
+```
+
+### Security Workflow
+
+All PRs are automatically scanned for:
+1. **Code vulnerabilities** (CodeQL)
+2. **Container vulnerabilities** (Trivy)
+3. **Dependency vulnerabilities** (Renovate + Dependabot)
+
+If security issues are detected:
+- **CRITICAL/HIGH**: CI fails, must be fixed before merge
+- **MEDIUM/LOW**: Reported in Security tab, can be addressed later
+
+### Reporting Security Issues
+
+**Do not open public issues for security vulnerabilities.**
+
+Use GitHub Security Advisories: https://github.com/cmontemuino/http-probe-test-app/security/advisories
+
+See [SECURITY.md](SECURITY.md) for details.
