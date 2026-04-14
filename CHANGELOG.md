@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/cmontemuino/http-probe-test-app/compare/v0.1.1...v0.2.0) (2026-04-14)
+
+
+### Features
+
+* add multi-layer security scanning ([#8](https://github.com/cmontemuino/http-probe-test-app/issues/8)) ([06d58fd](https://github.com/cmontemuino/http-probe-test-app/commit/06d58fddfa886aa8a00659f07b046ab06b6eabfc))
+
 ## [0.1.1](https://github.com/cmontemuino/http-probe-test-app/compare/v0.1.0...v0.1.1) (2026-04-13)
 
 
