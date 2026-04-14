@@ -73,6 +73,10 @@ jobs:
             ghcr.io/cmontemuino/http-probe-test-app:${{ steps.tags.outputs.major_minor }}
             ghcr.io/cmontemuino/http-probe-test-app:${{ steps.tags.outputs.major }}
             ghcr.io/cmontemuino/http-probe-test-app:latest
+          annotations: |
+            index:org.opencontainers.image.description=HTTP probe test service for Kubernetes liveness and readiness testing
+            index:org.opencontainers.image.source=https://github.com/cmontemuino/http-probe-test-app
+            index:org.opencontainers.image.licenses=Apache-2.0
 
       - name: Attest build provenance
         uses: actions/attest@v4

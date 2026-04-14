@@ -4,6 +4,7 @@
 [![CodeQL](https://github.com/cmontemuino/http-probe-test-app/workflows/CodeQL/badge.svg)](https://github.com/cmontemuino/http-probe-test-app/actions/workflows/codeql.yml)
 [![Trivy](https://github.com/cmontemuino/http-probe-test-app/workflows/Trivy%20Container%20Scan/badge.svg)](https://github.com/cmontemuino/http-probe-test-app/security/code-scanning)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cmontemuino/http-probe-test-app/badge)](https://scorecard.dev/viewer/?uri=github.com/cmontemuino/http-probe-test-app)
 
 A small HTTP service to **exercise Kubernetes liveness/readiness probes** and related monitoring:
 artificial latency, configurable failure modes, and Prometheus metrics.
@@ -73,40 +74,62 @@ See `deploy/` for a minimal `Deployment` and `Service` you can apply to a cluste
 
 ## Supply Chain Security
 
-Every released container image includes:
+Every released container image includes cryptographically signed attestations:
 
-- **SLSA Build Provenance** (Level 3): Cryptographically signed attestation of how the image was built
-- **SBOM** (Software Bill of Materials): Complete list of packages in the image (SPDX format)
-- **Sigstore Signatures**: All attestations are signed using Sigstore via GitHub's OIDC provider
+| Attestation | Format | Purpose |
+|-------------|--------|---------|
+| **SLSA Build Provenance** | [in-toto v1](https://in-toto.io/) | Proves the image was built by this repository's CI |
+| **SBOM** | [SPDX 2.3](https://spdx.dev/) (JSON) | Lists all packages in the image |
 
-### Verifying Image Provenance
+Attestations are signed with [Sigstore](https://www.sigstore.dev/) via GitHub's OIDC provider (no manual keys).
+They are stored both in GHCR (as OCI artifacts) and via the [GitHub Attestations API](https://github.com/cmontemuino/http-probe-test-app/attestations).
 
-Install the [GitHub CLI](https://cli.github.com/) and verify any image:
+### Verify an image
 
 ```bash
-gh attestation verify oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+gh attestation verify oci://ghcr.io/cmontemuino/http-probe-test-app:v0.3.0 \
   --owner cmontemuino
 ```
 
-### Downloading Attestations
+Expected output:
+```
+Loaded digest sha256:... for oci://ghcr.io/cmontemuino/http-probe-test-app:v0.3.0
+Loaded 2 attestations from ghcr.io/cmontemuino/http-probe-test-app
+✓ Verification succeeded!
+```
+
+### Download attestations
 
 ```bash
-# Download provenance attestation
-gh attestation download oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+# Build provenance
+gh attestation download oci://ghcr.io/cmontemuino/http-probe-test-app:v0.3.0 \
   --owner cmontemuino \
   --predicate-type https://slsa.dev/provenance/v1
 
-# Download SBOM attestation
-gh attestation download oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+# SBOM
+gh attestation download oci://ghcr.io/cmontemuino/http-probe-test-app:v0.3.0 \
   --owner cmontemuino \
   --predicate-type https://spdx.dev/Document
 ```
 
-### Kubernetes Policy Enforcement
+### Inspect attestations online
 
-Use [Sigstore Policy Controller](https://docs.sigstore.dev/policy-controller/overview/) or
-[Kyverno](https://kyverno.io/) to enforce provenance verification in your cluster before
-admitting images.
+- [GitHub Attestations](https://github.com/cmontemuino/http-probe-test-app/attestations)
+- [Sigstore Transparency Log](https://search.sigstore.dev/)
+
+### SLSA Level
+
+This project achieves [SLSA Level 3](https://slsa.dev/spec/v1.0/levels) for container images:
+- **Level 1**: Documented build process (Dockerfile, CI/CD)
+- **Level 2**: Tamper-resistant build (GitHub Actions)
+- **Level 3**: Hardened build platform (GitHub-hosted runners, non-forgeable provenance)
+
+### Policy enforcement
+
+For production Kubernetes clusters, enforce provenance verification before admitting images:
+- [Sigstore Policy Controller](https://docs.sigstore.dev/policy-controller/overview/)
+- [Kyverno](https://kyverno.io/)
+- [Ratify](https://ratify.dev/)
 
 ## Security
 

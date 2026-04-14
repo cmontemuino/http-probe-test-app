@@ -77,15 +77,16 @@ If security issues are detected:
 
 ### Supply Chain Security
 
-Released images include SLSA provenance and SBOM attestations. These are generated
-automatically during the release workflow — no manual steps needed.
+Released images include SLSA provenance and SBOM attestations, generated automatically
+during the release workflow. See [SECURITY.md](SECURITY.md) for verification instructions.
 
-To verify a released image locally:
+### OpenSSF Scorecard
 
-```bash
-gh attestation verify oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
-  --owner cmontemuino
-```
+This project is monitored by [OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/cmontemuino/http-probe-test-app),
+which evaluates security practices. When contributing, keep in mind:
+- Pin GitHub Actions to commit SHAs (Renovate handles this automatically)
+- Use conventional commits
+- Keep dependencies up to date
 
 ### Reporting Security Issues
 
