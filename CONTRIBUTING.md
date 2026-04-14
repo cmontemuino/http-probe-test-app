@@ -75,6 +75,18 @@ If security issues are detected:
 - **CRITICAL/HIGH**: CI fails, must be fixed before merge
 - **MEDIUM/LOW**: Reported in Security tab, can be addressed later
 
+### Supply Chain Security
+
+Released images include SLSA provenance and SBOM attestations. These are generated
+automatically during the release workflow — no manual steps needed.
+
+To verify a released image locally:
+
+```bash
+gh attestation verify oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+  --owner cmontemuino
+```
+
 ### Reporting Security Issues
 
 **Do not open public issues for security vulnerabilities.**

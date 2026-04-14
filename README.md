@@ -71,6 +71,43 @@ docker run --rm -p 8080:8080 http-probe-test-app:local
 
 See `deploy/` for a minimal `Deployment` and `Service` you can apply to a cluster.
 
+## Supply Chain Security
+
+Every released container image includes:
+
+- **SLSA Build Provenance** (Level 3): Cryptographically signed attestation of how the image was built
+- **SBOM** (Software Bill of Materials): Complete list of packages in the image (SPDX format)
+- **Sigstore Signatures**: All attestations are signed using Sigstore via GitHub's OIDC provider
+
+### Verifying Image Provenance
+
+Install the [GitHub CLI](https://cli.github.com/) and verify any image:
+
+```bash
+gh attestation verify oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+  --owner cmontemuino
+```
+
+### Downloading Attestations
+
+```bash
+# Download provenance attestation
+gh attestation download oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+  --owner cmontemuino \
+  --predicate-type https://slsa.dev/provenance/v1
+
+# Download SBOM attestation
+gh attestation download oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+  --owner cmontemuino \
+  --predicate-type https://spdx.dev/Document
+```
+
+### Kubernetes Policy Enforcement
+
+Use [Sigstore Policy Controller](https://docs.sigstore.dev/policy-controller/overview/) or
+[Kyverno](https://kyverno.io/) to enforce provenance verification in your cluster before
+admitting images.
+
 ## Security
 
 This project implements comprehensive security scanning:

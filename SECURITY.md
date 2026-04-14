@@ -32,6 +32,9 @@ This project uses multiple layers of security scanning:
 - **govulncheck**: Go-specific vulnerability database checks (CI + local)
 - **Renovate**: Automated dependency updates with vulnerability alerts
 - **Dependabot**: Additional security-focused dependency alerts
+- **SLSA Provenance**: Level 3 build provenance attestations for all released images
+- **SBOM**: Software Bill of Materials generated for every release (SPDX format)
+- **Sigstore**: Cryptographic signing of all attestations via GitHub OIDC
 
 All security findings are tracked in the [Security tab](https://github.com/cmontemuino/http-probe-test-app/security).
 
@@ -44,6 +47,30 @@ When using this container image:
 3. **Keep updated**: Regularly pull newer versions with security patches
 4. **Network isolation**: Run in isolated network environments when testing probe failures
 5. **Resource limits**: Set CPU/memory limits to prevent DoS via artificial latency
+
+## Verifying Images
+
+All container images published to GHCR include cryptographic attestations.
+
+### Verify with GitHub CLI
+
+```bash
+gh attestation verify oci://ghcr.io/cmontemuino/http-probe-test-app:latest \
+  --owner cmontemuino
+```
+
+### What is verified
+
+1. **Build provenance**: The image was built by this repository's GitHub Actions workflow
+2. **Integrity**: The image has not been tampered with since build
+3. **SBOM**: The list of packages matches the actual image contents
+
+### Policy enforcement
+
+For production deployments, consider enforcing provenance verification using:
+- [Sigstore Policy Controller](https://docs.sigstore.dev/policy-controller/overview/)
+- [Kyverno](https://kyverno.io/)
+- [Ratify](https://ratify.dev/)
 
 ## Vulnerability Disclosure Timeline
 
