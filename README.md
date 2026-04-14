@@ -1,6 +1,8 @@
 # http-probe-test-app
 
 [![CI](https://github.com/cmontemuino/http-probe-test-app/actions/workflows/ci.yml/badge.svg)](https://github.com/cmontemuino/http-probe-test-app/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/cmontemuino/http-probe-test-app/workflows/CodeQL/badge.svg)](https://github.com/cmontemuino/http-probe-test-app/actions/workflows/codeql.yml)
+[![Trivy](https://github.com/cmontemuino/http-probe-test-app/workflows/Trivy%20Container%20Scan/badge.svg)](https://github.com/cmontemuino/http-probe-test-app/security/code-scanning)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com)
 
 A small HTTP service to **exercise Kubernetes liveness/readiness probes** and related monitoring:
@@ -68,6 +70,20 @@ docker run --rm -p 8080:8080 http-probe-test-app:local
 ## Kubernetes
 
 See `deploy/` for a minimal `Deployment` and `Service` you can apply to a cluster.
+
+## Security
+
+This project implements comprehensive security scanning:
+
+- **CodeQL**: Automated code security analysis
+- **Trivy**: Container vulnerability scanning
+- **govulncheck**: Go vulnerability database checks
+- **Renovate**: Automated dependency updates
+- **Dependabot**: Security-focused alerts
+
+Security findings are tracked in the [Security tab](https://github.com/cmontemuino/http-probe-test-app/security).
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting and security policies.
 
 ## License
 
