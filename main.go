@@ -2,14 +2,17 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -40,6 +43,7 @@ type Config struct {
 	FailLivenessAfterN  int
 	FailReadinessAfterN int
 	ReadyDelaySeconds   int
+	ShutdownTimeoutSec  int
 }
 
 func loadConfig() Config {
@@ -55,6 +59,7 @@ func loadConfig() Config {
 		FailLivenessAfterN:  getEnvInt("FAIL_LIVENESS_AFTER_N_REQUESTS", 0),
 		FailReadinessAfterN: getEnvInt("FAIL_READINESS_AFTER_N_REQUESTS", 0),
 		ReadyDelaySeconds:   getEnvInt("READY_DELAY_SECONDS", 0),
+		ShutdownTimeoutSec:  getEnvInt("SHUTDOWN_TIMEOUT_SECONDS", 5),
 	}
 }
 
@@ -290,8 +295,32 @@ func main() {
 	fmt.Printf("Config: prefix=%s, cluster=%s, pod=%s, node=%s\n",
 		cfg.Prefix, cfg.ClusterLabel, cfg.PodName, cfg.NodeName)
 
-	if err := http.ListenAndServe(addr, logMiddleware(mux)); err != nil {
-		fmt.Fprintf(os.Stderr, "Server error: %v\n", err)
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: logMiddleware(mux),
+	}
+
+	// Shutdown on SIGINT/SIGTERM
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Fprintf(os.Stderr, "Server error: %v\n", err)
+			os.Exit(1)
+		}
+	}()
+
+	sig := <-shutdown
+	fmt.Printf("Received %v, starting graceful shutdown (timeout: %ds)...\n", sig, cfg.ShutdownTimeoutSec)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ShutdownTimeoutSec)*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		fmt.Fprintf(os.Stderr, "Graceful shutdown failed: %v\n", err)
 		os.Exit(1)
 	}
+
+	fmt.Println("Server stopped gracefully")
 }
