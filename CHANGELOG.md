@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/cmontemuino/http-probe-test-app/compare/v0.3.0...v0.4.0) (2026-04-14)
+
+
+### Features
+
+* add graceful shutdown with SIGTERM handling ([#19](https://github.com/cmontemuino/http-probe-test-app/issues/19)) ([10f58ad](https://github.com/cmontemuino/http-probe-test-app/commit/10f58ad2369ae88340882a9cee165d246c23ee3f))
+
 ## [0.3.0](https://github.com/cmontemuino/http-probe-test-app/compare/v0.2.0...v0.3.0) (2026-04-14)
 
 
