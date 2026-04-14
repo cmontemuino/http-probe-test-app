@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/cmontemuino/http-probe-test-app/compare/v0.2.0...v0.3.0) (2026-04-14)
+
+
+### Features
+
+* **ci:** add SLSA provenance and SBOm attestations ([#11](https://github.com/cmontemuino/http-probe-test-app/issues/11)) ([4ea7fd5](https://github.com/cmontemuino/http-probe-test-app/commit/4ea7fd5ae7706f2b64eac29b17f4680062dc5f88))
+
 ## [0.2.0](https://github.com/cmontemuino/http-probe-test-app/compare/v0.1.1...v0.2.0) (2026-04-14)
 
 
