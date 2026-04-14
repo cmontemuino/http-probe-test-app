@@ -36,6 +36,19 @@ artificial latency, configurable failure modes, and Prometheus metrics.
 | `FAIL_LIVENESS_AFTER_N_REQUESTS` | `0` | If >0, `/healthz` returns 500 after N total requests. |
 | `FAIL_READINESS_AFTER_N_REQUESTS` | `0` | If >0, `/readyz` returns 503 after N total requests. |
 | `READY_DELAY_SECONDS` | `0` | If >0, `/readyz` returns 503 until delay elapses after start. |
+| `SHUTDOWN_TIMEOUT_SECONDS` | `5` | Graceful shutdown timeout on SIGTERM/SIGINT. |
+
+## Graceful Shutdown
+
+The service handles `SIGTERM` and `SIGINT` signals for clean shutdown. When a signal is received:
+
+1. The server stops accepting new connections
+2. In-flight requests are allowed to complete (up to `SHUTDOWN_TIMEOUT_SECONDS`)
+3. The process exits with code 0
+
+This follows the Kubernetes pod termination lifecycle: kubelet sends SIGTERM, the app drains,
+and kubelet sends SIGKILL after `terminationGracePeriodSeconds` (default 30s) if the process
+is still running.
 
 ## Quick start (container)
 

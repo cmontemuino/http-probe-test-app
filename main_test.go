@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -197,5 +199,53 @@ func TestLoadConfig(t *testing.T) {
 	cfg := loadConfig()
 	if cfg.Port != 9090 || cfg.Prefix != "custom" {
 		t.Errorf("loadConfig failed: %+v", cfg)
+	}
+}
+
+func TestGracefulShutdown(t *testing.T) {
+	resetGlobalState()
+	registerMetrics("shutdown_test")
+	cfg := Config{Port: 0, ShutdownTimeoutSec: 2}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", healthzHandler(cfg))
+
+	srv := &http.Server{
+		Handler: mux,
+	}
+
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("failed to listen: %v", err)
+	}
+
+	go func() {
+		if err := srv.Serve(ln); err != nil && err != http.ErrServerClosed {
+			t.Errorf("unexpected serve error: %v", err)
+		}
+	}()
+
+	// Verify server is running
+	resp, err := http.Get("http://" + ln.Addr().String() + "/healthz")
+	if err != nil {
+		t.Fatalf("server not responding: %v", err)
+	}
+	_ = resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected 200, got %d", resp.StatusCode)
+	}
+
+	// Trigger graceful shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.ShutdownTimeoutSec)*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		t.Fatalf("shutdown failed: %v", err)
+	}
+
+	// Verify server is no longer accepting connections
+	_, err = http.Get("http://" + ln.Addr().String() + "/healthz")
+	if err == nil {
+		t.Error("expected connection error after shutdown")
 	}
 }

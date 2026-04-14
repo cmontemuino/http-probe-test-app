@@ -27,6 +27,24 @@ func TestGetEnv(t *testing.T) {
 	})
 }
 
+func TestShutdownTimeoutConfig(t *testing.T) {
+	t.Run("default value", func(t *testing.T) {
+		_ = os.Unsetenv("SHUTDOWN_TIMEOUT_SECONDS")
+		cfg := loadConfig()
+		if cfg.ShutdownTimeoutSec != 5 {
+			t.Errorf("expected default 5, got %d", cfg.ShutdownTimeoutSec)
+		}
+	})
+
+	t.Run("custom value", func(t *testing.T) {
+		t.Setenv("SHUTDOWN_TIMEOUT_SECONDS", "15")
+		cfg := loadConfig()
+		if cfg.ShutdownTimeoutSec != 15 {
+			t.Errorf("expected 15, got %d", cfg.ShutdownTimeoutSec)
+		}
+	})
+}
+
 func TestGetEnvInt(t *testing.T) {
 	key := "TEST_ENV_INT"
 	fallback := 42
