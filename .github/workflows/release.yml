@@ -85,6 +85,8 @@ jobs:
           image: ghcr.io/cmontemuino/http-probe-test-app:${{ steps.tags.outputs.tag }}
           format: spdx-json
           output-file: sbom.spdx.json
+          # The SBOM file is needed for attestation only (not as a release asset)
+          upload-release-asstes: false
 
       - name: Attest SBOM
         uses: actions/attest@v4
